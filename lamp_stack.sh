@@ -26,6 +26,12 @@ sudo systemctl start mariadb
 echo "Instalando PHP 8.4..."
 sudo apt install -y php libapache2-mod-php php-mysql php-cli php-curl php-gd php-mbstring php-xml php-zip
 
+# Crear Certificado local
+sudo apt install ssl-cert
+sudo make-ssl-cert generate-default-snakeoil --force-overwrite
+sudo a2enmod ssl
+sudo systemctl restart apache2
+
 # Instalar ProFTPd
 sudo apt install proftpd -y
 
@@ -45,16 +51,58 @@ sudo ufw allow http
 sudo ufw allow https
 sudo ufw allow 10000
 sudo ufw allow ssh
+sudo ufw allow ftp
 sudo ufw enable
 sudo ufw reload
 
-# Ajustar permisos para /var/www/html
-#sudo chown -R $USER:www-data /var/www/html
-#sudo chmod -R 755 /var/www/html
+# Ensure the script is run as root
+if [ "$(id -u)" -ne 0 ]; then
+    echo "This script must be run as root. Use sudo or switch to the root user."
+    exit 1
+fi
 
-# Crear archivo de prueba info.php
-#echo "<?php phpinfo(); ?>" > /var/www/html/info.php
+# Prompt for the new username
+read -p "Enter the new username: " USERNAME
+
+# Check if the user already exists
+if id "$USERNAME" &>/dev/null; then
+    echo "User $USERNAME already exists. Please choose a different username."
+    exit 1
+fi
+
+# Use adduser to create the user account
+# adduser is a user-friendly wrapper around useradd on Debian
+adduser --disabled-password --gecos "" "$USERNAME"
+
+# Check if user creation was successful
+if [ $? -eq 0 ]; then
+    echo "User account for $USERNAME created successfully."
+else
+    echo "Failed to create user account."
+    exit 1
+fi
+
+# Add user to groups
+useradd -a -G sudo,users,www-data,mysql $USERNAME
+
+# Prompt for and set a password
+# The --disabled-password flag above means we must set the password now
+read -s -p "Enter initial password for $USERNAME: " PASSWORD
+echo "$USERNAME:$PASSWORD" | chpasswd
+echo "" # Newline for formatting
+
+# Enforce password change on first login for security
+passwd -e "$USERNAME"
+
+echo "User $USERNAME details:"
+echo "Username: $USERNAME"
+echo "Home directory: /home/$USERNAME"
+echo "Shell: /bin/bash"
+echo "Password change required on first login."
+
+# Ajustar permisos para /var/www/html
+#sudo chown -R $USERNAME:www-data /var/www/html
+#sudo chmod -R 775 /var/www/html
 
 echo "Instalación completada con éxito."
 #echo "Puedes acceder a http://tu_ip/info.php para verificar PHP."
-
