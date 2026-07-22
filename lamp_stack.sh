@@ -73,15 +73,7 @@ fi
 
 # Use adduser to create the user account
 # adduser is a user-friendly wrapper around useradd on Debian
-adduser --disabled-password --gecos "" "$USERNAME"
-
-# Check if user creation was successful
-if [ $? -eq 0 ]; then
-    echo "User account for $USERNAME created successfully."
-else
-    echo "Failed to create user account."
-    exit 1
-fi
+#adduser --disabled-password --gecos "" "$USERNAME"
 
 # Add user to groups
 useradd -a -G sudo,users,www-data,mysql $USERNAME
@@ -118,6 +110,15 @@ cat $USERNAME.conf <<EOF
     CustomLog ${APACHE_LOG_DIR}/$USERNAME__access.log combined
 </VirtualHost>
 EOF
+
+# Check if user creation was successful
+if [ $? -eq 0 ]; then
+    echo "User account for $USERNAME created successfully."
+else
+    echo "Failed to create user account."
+    exit 1
+fi
+
 systemctl restart apache2
 #sudo chown -R $USERNAME:www-data /var/www/html
 #sudo chmod -R 775 /var/www/html
