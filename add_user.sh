@@ -20,7 +20,7 @@ fi
 #adduser --disabled-password --gecos "" "$user_name"
 
 # Add user to groups
-useradd -a -G sudo,users,www-data,mysql $user_name
+useradd -aG sudo,users,www-data,mysql $user_name
 
 # Prompt for and set a password
 # The --disabled-password flag above means we must set the password now
@@ -29,13 +29,13 @@ echo "$user_name:$PASSWORD" | chpasswd
 echo "" # Newline for formatting
 
 # Enforce password change on first login for security
-passwd -e "$user_name"
+#passwd -e "$user_name"
 
 echo "User $user_name details:"
 echo "user_name: $user_name"
 echo "Home directory: /home/$user_name"
 echo "Shell: /bin/bash"
-echo "Password change required on first login."
+#echo "Password change required on first login."
 
 # Ajustar permisos para /var/www/html
 chmod o+x /home/$user_name
@@ -43,7 +43,7 @@ mkdir -p /home/$user_name/public_html
 chmod 755 /home/$user_name/public_html
 ln -s /var/www/html/$user_name /home/$user_name/public_html
 touch /etc/apache2/sites-available/$user_name.conf
-cat $user_name.conf <<EOF
+cat /etc/apache2/sites-available/$user_name.conf <<EOF
 <VirtualHost *:81>
     ServerAdmin webmaster@yourdomain.com
     ServerName $user_name
