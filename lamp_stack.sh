@@ -4,6 +4,7 @@
 echo "Actualizando el sistema..."
 apt update && sudo apt upgrade -y
 apt install curl php-cli php-mbstring git unzip -y
+dpkg-reconfigure locales
 
 #Instalando Webmin
 curl -o webmin-setup-repo.sh https://raw.githubusercontent.com/webmin/webmin/master/webmin-setup-repo.sh
