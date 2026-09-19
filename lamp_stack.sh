@@ -9,7 +9,7 @@ dpkg-reconfigure locales
 #Instalando Webmin
 curl -o webmin-setup-repo.sh https://raw.githubusercontent.com/webmin/webmin/master/webmin-setup-repo.sh
 sh webmin-setup-repo.sh
-apt-get install webmin --install-recommends
+apt-get install webmin --install-recommends -y
 
 # Instalar Apache
 echo "Instalando Apache..."
@@ -42,7 +42,7 @@ php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
 rm /tmp/composer-setup.php
 
 # Install NPM
-curl -fsSL https://deb.nodesource.com -o nodesource_setup.sh
+curl --fail --silent --show-error --location https://deb.nodesource.com/setup_current.x --output nodesource_setup.sh
 bash nodesource_setup.sh
 apt install nodejs -y
 
