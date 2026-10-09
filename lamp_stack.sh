@@ -25,7 +25,7 @@ systemctl start mariadb
 
 # Instalar PHP y módulos comunes
 echo "Instalando PHP..."
-sudo apt install php libapache2-mod-php php-mysql php-cli php-curl php-gd php-mbstring php-xml php-zip -y
+apt install php libapache2-mod-php php-mysql php-cli php-curl php-gd php-mbstring php-xml php-zip -y
 
 # Crear Certificado local
 apt install ssl-cert -y
